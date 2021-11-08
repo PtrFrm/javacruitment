@@ -7,8 +7,10 @@ import com.javacruitment.rest.model.User;
 import com.javacruitment.rest.model.UserUpsert;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,6 +21,9 @@ public class UserService {
 
 	private final UserMapper userMapper = new UserMapper();
 	private final UserDao userDao;
+
+	@Value("#{'${not-allowed-names.entries}'.split(',')}")
+	private final List<String> illegalNames = new ArrayList<>();
 
 	public UUID createUser(UserUpsert userUpsert) {
 		UserEntity userEntity = userDao.create(userMapper.map(userUpsert));
@@ -48,6 +53,10 @@ public class UserService {
     public boolean isCandidateDataIncorrect(UserUpsert candidate) {
 		return  userDao.isUsernameAlreadyInUse(candidate.getUsername())
 				|| userDao.isEmailAlreadyInUse(candidate.getEmail());
+	}
 
+	public boolean isGivenUsernameNotAllowed(String username) {
+		return illegalNames.stream()
+				.anyMatch(illegalName -> illegalName.equalsIgnoreCase(username));
 	}
 }

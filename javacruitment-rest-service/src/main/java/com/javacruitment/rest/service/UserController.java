@@ -83,6 +83,10 @@ class UserController {
 			return ResponseEntity.badRequest().body("Given Username/Email already exist");
 		}
 
+		if(userService.isGivenUsernameNotAllowed(candidate.getUsername())) {
+			return ResponseEntity.badRequest().body("Given Username is not allowed");
+		}
+
 		UUID userId = userService.createUser(candidate);
 		return ResponseEntity.created(userUri(userId)).build();
 

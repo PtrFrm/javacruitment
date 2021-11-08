@@ -23,3 +23,6 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /api-docs
+
+not-allowed-names:
+    entries: admin,administrator,root
