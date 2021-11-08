@@ -42,4 +42,14 @@ public class UserDao {
 	public void delete(UserEntity user) {
 		userRepository.delete(user);
 	}
+
+    public boolean isUsernameAlreadyInUse(String username) {
+		return userRepository.findByUsername(username)
+				.isPresent();
+    }
+
+	public boolean isEmailAlreadyInUse(String email) {
+		return userRepository.findByEmail(email)
+				.isPresent();
+	}
 }

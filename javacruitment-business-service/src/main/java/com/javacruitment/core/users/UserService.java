@@ -44,4 +44,10 @@ public class UserService {
 	public void checkUserExists(UUID id) throws UserNotFoundException {
 		userDao.checkExists(id);
 	}
+
+    public boolean isCandidateDataIncorrect(UserUpsert candidate) {
+		return  userDao.isUsernameAlreadyInUse(candidate.getUsername())
+				|| userDao.isEmailAlreadyInUse(candidate.getEmail());
+
+	}
 }
