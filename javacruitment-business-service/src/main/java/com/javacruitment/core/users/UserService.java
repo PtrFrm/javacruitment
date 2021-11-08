@@ -59,4 +59,11 @@ public class UserService {
 		return illegalNames.stream()
 				.anyMatch(illegalName -> illegalName.equalsIgnoreCase(username));
 	}
+
+	public List<User> getAllUsersWhereUsernameContain(String text) {
+		return userDao.findAllWhereUsernameContain(text).stream()
+				.map(userMapper::map)
+				.collect(Collectors.toUnmodifiableList());
+	}
+
 }

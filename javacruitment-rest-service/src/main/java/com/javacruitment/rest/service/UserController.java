@@ -92,6 +92,14 @@ class UserController {
 
 	}
 
+	@GetMapping(path = "/filtered", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<User>> getAllUsersFilteredBy(@RequestParam String text) {
+		if(text.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+		return ResponseEntity.ok(userService.getAllUsersWhereUsernameContain(text));
+	}
+
 	private URI userUri(UUID userId) {
 		return new CreatedURI("/" + userId).uri();
 	}

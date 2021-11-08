@@ -52,4 +52,9 @@ public class UserDao {
 		return userRepository.findByEmail(email)
 				.isPresent();
 	}
+
+	public List<UserEntity> findAllWhereUsernameContain(String text) {
+		return userRepository.findByUsernameContaining(text);
+	}
+
 }

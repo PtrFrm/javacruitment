@@ -1,5 +1,6 @@
 package com.javacruitment.dao.users;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByUsername(String username);
 
     Optional<UserEntity> findByEmail(String email);
+
+    List<UserEntity> findByUsernameContaining(String username);
 }
