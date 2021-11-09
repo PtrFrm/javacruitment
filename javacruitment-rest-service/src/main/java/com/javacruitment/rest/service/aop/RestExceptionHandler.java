@@ -1,5 +1,6 @@
 package com.javacruitment.rest.service.aop;
 
+import com.javacruitment.common.exceptions.UserBadRequestException;
 import com.javacruitment.common.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,13 @@ class RestExceptionHandler {
 		return handleException(ex, HttpStatus.NOT_FOUND);
 	}
 
-	private ResponseEntity<Problem> handleException(Exception exception, HttpStatus httpStatus) {
-		log.error(exception.getMessage(), exception);
+    @ExceptionHandler({UserBadRequestException.class})
+    ResponseEntity<Problem> handleBadRequest(UserBadRequestException ex) {
+        return handleException(ex, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<Problem> handleException(Exception exception, HttpStatus httpStatus) {
+        log.error(exception.getMessage(), exception);
 
 		Problem problem = new Problem(httpStatus.value(), httpStatus.getReasonPhrase(), exception.getMessage());
 		return ResponseEntity.status(httpStatus)

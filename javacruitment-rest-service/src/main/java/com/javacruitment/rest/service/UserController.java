@@ -1,12 +1,6 @@
 package com.javacruitment.rest.service;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
-
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
-
+import com.javacruitment.common.exceptions.UserBadRequestException;
 import com.javacruitment.common.exceptions.UserNotFoundException;
 import com.javacruitment.core.users.UserService;
 import com.javacruitment.rest.model.User;
@@ -25,6 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 @RestController
 @RequestMapping(UserController.BASE_URL)
@@ -76,20 +76,17 @@ class UserController {
 		userService.checkUserExists(id);
 	}
 
-	@PostMapping
-	@ResponseStatus(CREATED)
-	public ResponseEntity<Object> createUser(@Valid @RequestBody UserUpsert candidate) {
-		if(userService.isCandidateDataIncorrect(candidate)) {
-			return ResponseEntity.badRequest().body("Given Username/Email already exist");
-		}
-
-		if(userService.isGivenUsernameNotAllowed(candidate.getUsername())) {
-			return ResponseEntity.badRequest().body("Given Username is not allowed");
-		}
-
+    @PostMapping
+    @ResponseStatus(CREATED)
+    @Operation(description = "Create new user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+    })
+    public ResponseEntity<Object> createUser(@Valid @RequestBody UserUpsert candidate) throws UserBadRequestException {
+        userService.checkGivenUsernameIsAllowed(candidate.getUsername());
 		UUID userId = userService.createUser(candidate);
 		return ResponseEntity.created(userUri(userId)).build();
-
 	}
 
 	@GetMapping(path = "/filtered", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,7 +98,7 @@ class UserController {
 	}
 
 	private URI userUri(UUID userId) {
-		return new CreatedURI("/" + userId).uri();
+		return CreatedURI.uri("/" + userId);
 	}
 
 }

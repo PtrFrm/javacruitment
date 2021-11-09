@@ -1,21 +1,16 @@
 package com.javacruitment.rest.service.configuration;
 
-import lombok.AllArgsConstructor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
-@AllArgsConstructor
-public class CreatedURI {
+public final class CreatedURI {
 
-    private final String path;
-
-    public URI uri() {
+    public static URI uri(String path) {
         return ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path(path)
                 .build()
                 .toUri();
     }
-
 
 }

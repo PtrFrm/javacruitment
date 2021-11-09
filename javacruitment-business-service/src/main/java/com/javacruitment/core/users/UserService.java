@@ -1,5 +1,6 @@
 package com.javacruitment.core.users;
 
+import com.javacruitment.common.exceptions.UserBadRequestException;
 import com.javacruitment.common.exceptions.UserNotFoundException;
 import com.javacruitment.dao.entities.UserEntity;
 import com.javacruitment.dao.users.UserDao;
@@ -50,20 +51,21 @@ public class UserService {
 		userDao.checkExists(id);
 	}
 
-    public boolean isCandidateDataIncorrect(UserUpsert candidate) {
-		return  userDao.isUsernameAlreadyInUse(candidate.getUsername())
-				|| userDao.isEmailAlreadyInUse(candidate.getEmail());
-	}
-
-	public boolean isGivenUsernameNotAllowed(String username) {
-		return illegalNames.stream()
-				.anyMatch(illegalName -> illegalName.equalsIgnoreCase(username));
-	}
+    public void checkGivenUsernameIsAllowed(String givenUsername) throws UserBadRequestException {
+        if (isUsernameProhibited(givenUsername)) {
+            throw new UserBadRequestException("Given Username is not allowed");
+        }
+    }
 
 	public List<User> getAllUsersWhereUsernameContain(String text) {
 		return userDao.findAllWhereUsernameContain(text).stream()
 				.map(userMapper::map)
 				.collect(Collectors.toUnmodifiableList());
+	}
+
+	private boolean isUsernameProhibited(String usernameToCheck) {
+		return illegalNames.stream()
+				.anyMatch(illegalName -> illegalName.equalsIgnoreCase(usernameToCheck));
 	}
 
 }
